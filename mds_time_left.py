@@ -10,6 +10,7 @@ from anki.lang import _, ngettext
 import aqt
 from aqt import mw, theme
 from aqt.utils import tooltip
+from aqt.overview import Overview, OverviewContent, OverviewBottomBar
 
 import math
 from datetime import datetime, timezone, timedelta, date
@@ -27,10 +28,11 @@ config = mw.addonManager.getConfig(__name__)
 # Quantify 'n' times the "new card" time | Example: Steps (1 10 10 20 30...)
 CountTimesNew = config['CountTimesNew']
 lrnSteps = 3
+showDebug = 0
 #-------------Configuration------------------
 
 def renderStats(self, _old):
-    x = (mw.col.sched.day_cutoff - 86400*2)*1000
+    x = (mw.col.sched.day_cutoff - 86400*7)*1000
 
     """Calculate progress using weights and card counts from the sched."""
     # Get studdied cards  and true retention stats
@@ -115,8 +117,38 @@ def renderStats(self, _old):
         + ".totaldue-color { color:"    + TotalDueColor + ";}" \
         + ".total-color { color:"       + TotalColor + ";}" \
         + "</style>"
-
-    buf = insert_style \
+    if showDebug:
+        buf = insert_style \
+        + "<div style='display:table;padding-top:1.5em;'>" \
+        + "<div style='display:table-cell;'> " \
+        + _old(self) + "<hr>" \
+        + _("New Cards") \
+        + ": &nbsp; <span class='new-color'> %(d)s</span>" % dict(d=new) \
+        + " &nbsp; " + _("Learn") \
+        + ": &nbsp; <span class='learn-color'>%(c)s</span>" % dict(c=lrn) \
+        + " &nbsp; <span style='white-space:nowrap;'>" + _("To Review") \
+        + ": &nbsp; <span class='review-color'>%(c)s</span>" % dict(c=due) \
+        + "</span>" \
+        + " &nbsp; <br><span style='white-space:nowrap;'>" + _("Due") \
+        + ": &nbsp; <b class='totaldue-color'>%(c)s</b> " % dict(c=(lrn+due)) \
+        + "</span> " \
+        + " &nbsp; <span style='white-space:nowrap;'>" + _("Total") \
+        + ": &nbsp; <b class='total-color'>%(c)s</b>" % dict(c=(totalDisplay)) \
+        + "</span></div>" \
+        + "<div style='display:table-cell;vertical-align:middle;" \
+        + "padding-left:2em;'>" \
+        + "<span style='white-space:nowrap;'>" + _("Statistics") \
+        + ": <br>" + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card, ").replace("s", "s")).lower()  \
+        + "</span>" \
+        + str(ngettext("%.02f hours", "%.02f hours", minutes) % (minutes)).replace(".", ".") + "&nbsp;" + _("More, ").lower() \
+        + "</span><br>" \
+        + str(ngettext("ETA %s","ETA %s",ETA) % (ETA)).replace(".",".")+ "&nbsp;" \
+        + "</span><br>" \
+        + str(ngettext("New/Lrn: %.02f","New/Lrn: %.02f",lrnWeight) % (lrnWeight)).replace(".",".")+ "&nbsp;" \
+        + str(ngettext("Rev: %.02f","Rev: %.02f",revWeight) % (revWeight)).replace(".",".")+ "&nbsp;" \
+        + "</div></div>"
+    else:
+        buf = insert_style \
         + "<div style='display:table;padding-top:1.5em;'>" \
         + "<div style='display:table-cell;'> " \
         + _old(self) + "<hr>" \
@@ -136,12 +168,13 @@ def renderStats(self, _old):
         + "<div style='display:table-cell;vertical-align:middle;" \
         + "padding-left:2em;'>" \
         + "<span style='white-space:nowrap;'>" + _("Average") \
-        + ":<br> " + _("%.01f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card").replace("s", "")).lower()  \
+        + ":<br> " + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card").replace("s", "s")).lower()  \
         + "</span><br>" \
         + str(ngettext("%.02f hours", "%.02f hours", minutes) % (minutes)).replace(".", ".") + "&nbsp;" + _("More").lower() \
         + "</span><br>" \
         + str(ngettext("ETA %s","ETA %s",ETA) % (ETA)).replace(".",".")+ "&nbsp;" \
         + "</div></div>"
+        
     return buf
         #+ ":<br> " + _("%.01f cards/minute") % (speed) \
         #+ _("More") + "&nbsp;" + ngettext("%s minute.", "%s minutes.", minutes) % (minutes) \
