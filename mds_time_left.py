@@ -81,6 +81,7 @@ def renderStats(self, _old):
 
     speed   = thetime / max(1, cards)
     minutes = (total*speed)/3600
+    thetimerounded = round(thetime/60,2)
     
     hrhr = math.floor(minutes)
     hrmin = math.floor(60*(minutes-hrhr))
@@ -120,8 +121,8 @@ def renderStats(self, _old):
     if showDebug:
         buf = insert_style \
         + "<div style='display:table;padding-top:1.5em;'>" \
-        + "<div style='display:table-cell;'> " \
-        + _old(self) + "<hr>" \
+        + "<div style='display:table-cell;background-color:black'> " \
+        + "Studied " + _("%d") % (cards)+ " cards in " + _("%.02f") % (thetimerounded) + " minutes today" + "<hr>" \
         + _("New Cards") \
         + ": &nbsp; <span class='new-color'> %(d)s</span>" % dict(d=new) \
         + " &nbsp; " + _("Learn") \
@@ -138,9 +139,9 @@ def renderStats(self, _old):
         + "<div style='display:table-cell;vertical-align:middle;" \
         + "padding-left:2em;'>" \
         + "<span style='white-space:nowrap;'>" + _("Statistics") \
-        + ": <br>" + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card, ").replace("s", "s")).lower()  \
-        + "</span>" \
-        + str(ngettext("%.02f hours", "%.02f hours", minutes) % (minutes)).replace(".", ".") + "&nbsp;" + _("More, ").lower() \
+        + ":<br> " + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card").replace("s", "")).lower()  \
+        + "</span><br>" \
+        + str(ngettext("%02d", "%02d", hrhr) % (hrhr)) + ":" + str(ngettext("%02d", "%02d", hrmin) % (hrmin)) + _(" More").lower() \
         + "</span><br>" \
         + str(ngettext("ETA %s","ETA %s",ETA) % (ETA)).replace(".",".")+ "&nbsp;" \
         + "</span><br>" \
@@ -150,8 +151,8 @@ def renderStats(self, _old):
     else:
         buf = insert_style \
         + "<div style='display:table;padding-top:1.5em;'>" \
-        + "<div style='display:table-cell;'> " \
-        + _old(self) + "<hr>" \
+        + "<div style='display:table-cell;background-color:black'> " \
+        + "Studied " + _("%d") % (cards)+ " cards in " + _("%.02f") % (thetimerounded) + " minutes today" + "<hr>" \
         + _("New Cards") \
         + ": &nbsp; <span class='new-color'> %(d)s</span>" % dict(d=new) \
         + " &nbsp; " + _("Learn") \
@@ -167,14 +168,13 @@ def renderStats(self, _old):
         + "</span></div>" \
         + "<div style='display:table-cell;vertical-align:middle;" \
         + "padding-left:2em;'>" \
-        + "<span style='white-space:nowrap;'>" + _("Average") \
-        + ":<br> " + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card").replace("s", "s")).lower()  \
+        + "<span style='white-space:nowrap;'>" + _("Statistics") \
+        + ":<br> " + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card").replace("s", "")).lower()  \
         + "</span><br>" \
         + str(ngettext("%02d", "%02d", hrhr) % (hrhr)) + ":" + str(ngettext("%02d", "%02d", hrmin) % (hrmin)) + _(" More").lower() \
         + "</span><br>" \
         + str(ngettext("ETA %s","ETA %s",ETA) % (ETA)).replace(".",".")+ "&nbsp;" \
         + "</div></div>"
-        
     return buf
         #+ ":<br> " + _("%.01f cards/minute") % (speed) \
         #+ _("More") + "&nbsp;" + ngettext("%s minute.", "%s minutes.", minutes) % (minutes) \
