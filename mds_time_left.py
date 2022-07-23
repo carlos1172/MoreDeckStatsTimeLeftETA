@@ -170,7 +170,7 @@ def renderStats(self, _old):
         + "<span style='white-space:nowrap;'>" + _("Average") \
         + ":<br> " + _("%.02f") % (speed) + "&nbsp;" + (_("s") + "/" + _("card").replace("s", "s")).lower()  \
         + "</span><br>" \
-        + str(ngettext("%.02f hours", "%.02f hours", minutes) % (minutes)).replace(".", ".") + "&nbsp;" + _("More").lower() \
+        + str(ngettext("%02d", "%02d", hrhr) % (hrhr)) + ":" + str(ngettext("%02d", "%02d", hrmin) % (hrmin)) + _(" More").lower() \
         + "</span><br>" \
         + str(ngettext("ETA %s","ETA %s",ETA) % (ETA)).replace(".",".")+ "&nbsp;" \
         + "</div></div>"
